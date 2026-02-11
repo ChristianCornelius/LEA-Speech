@@ -2,6 +2,10 @@
 //  AzureSpeechManager.swift
 //  LEA-Speech
 //
+//
+//  AzureSpeechManager.swift
+//  LEA-Speech
+//
 
 import Foundation
 import MicrosoftCognitiveServicesSpeech
@@ -71,13 +75,8 @@ final class AzureSpeechManager: NSObject, ObservableObject {
                 options: [.defaultToSpeaker, .allowBluetooth]
             )
 
-            /*
-            try session.setCategory(
-                .playAndRecord,
-                mode: .spokenAudio,
-                options: [.defaultToSpeaker, .allowBluetooth]
-            )
-             */
+            // 🔥 MIKROFONEMPFINDLICHKEIT ERHÖHEN
+            try session.setPreferredIOBufferDuration(0.005)
             try session.setActive(true)
 
             let config = try SPXSpeechTranslationConfiguration(
@@ -104,6 +103,9 @@ final class AzureSpeechManager: NSObject, ObservableObject {
                     self.liveSourceText = event.result.text ?? ""
                     self.liveTranslatedText =
                         event.result.translations[targetLang] as? String ?? ""
+                    
+                    // 📊 DEBUG LOGGING
+                    print("📝 Live erkannt: '\(self.liveSourceText)'")
                 }
             }
 
@@ -134,6 +136,9 @@ final class AzureSpeechManager: NSObject, ObservableObject {
                     // Live-Text leeren, wenn Satz final ist
                     self.liveSourceText = ""
                     self.liveTranslatedText = ""
+                    
+                    // 📊 DEBUG LOGGING
+                    print("✅ Final erkannt: '\(original)' → '\(translated)'")
                 }
             }
 
@@ -214,34 +219,6 @@ final class AzureSpeechManager: NSObject, ObservableObject {
         }
     }
 
-    /*
-    func stopTranslation(
-        speakTranslation: Bool = false,
-        targetLanguage: String? = nil
-    ) async {
-
-        silenceTimer?.cancel()
-        silenceTimer = nil
-
-        do {
-            try recognizer?.stopContinuousRecognition()
-        } catch {
-            print("❌ Stop Fehler:", error.localizedDescription)
-        }
-
-        recognizer = nil
-
-        sourceText = sourceBuffer
-        translatedText = translationBuffer
-        liveSourceText = ""
-        liveTranslatedText = ""
-        isRecording = false
-
-        if speakTranslation, let lang = targetLanguage {
-            speakTranslatedText(language: lang)
-        }
-    }
-*/
     // MARK: - Text To Speech
 
     func speakTranslatedText(language: String) {
@@ -257,32 +234,7 @@ final class AzureSpeechManager: NSObject, ObservableObject {
     }
     
     // MARK: - Speak arbitrary text (for chat bubbles)
-/*
-    func speak(text: String, language: String) {
-        guard !text.isEmpty else { return }
 
-        let session = AVAudioSession.sharedInstance()
-
-        do {
-            try session.setCategory(
-                .playback,
-                mode: .spokenAudio,
-                options: [.duckOthers]
-            )
-            try session.setActive(true)
-        } catch {
-            print("❌ AudioSession (TTS) Fehler:", error.localizedDescription)
-        }
-
-        let utterance = AVSpeechUtterance(string: text)
-        utterance.voice = AVSpeechSynthesisVoice(language: language)
-        utterance.rate = 0.48
-        utterance.volume = 1.0
-
-        speechSynthesizer.stopSpeaking(at: .immediate)
-        speechSynthesizer.speak(utterance)
-    }
-*/
     func speak(text: String, language: String) {
         guard !text.isEmpty else { return }
 
@@ -309,7 +261,6 @@ final class AzureSpeechManager: NSObject, ObservableObject {
         speechSynthesizer.speak(utterance)
     }
 
-
     
 }
 
@@ -326,5 +277,3 @@ extension AzureSpeechManager: AVSpeechSynthesizerDelegate {
         }
     }
 }
-
-
