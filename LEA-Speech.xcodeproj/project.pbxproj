@@ -32,6 +32,16 @@
 		5678BCB02F2234D90025023B /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		5661D9FE2F3C6887003A47B2 /* Exceptions for "LEA-Speech" folder in "LEA-Speech" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 56478B142EE7EF0A00DACC76 /* LEA-Speech */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 		5678BCAA2F2234830025023B /* Exceptions for "LEA-Speech" folder in "Embed Frameworks" phase from "LEA-Speech" target */ = {
 			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
@@ -49,6 +59,7 @@
 		56478B172EE7EF0A00DACC76 /* LEA-Speech */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
+				5661D9FE2F3C6887003A47B2 /* Exceptions for "LEA-Speech" folder in "LEA-Speech" target */,
 				5678BCAA2F2234830025023B /* Exceptions for "LEA-Speech" folder in "Embed Frameworks" phase from "LEA-Speech" target */,
 			);
 			path = "LEA-Speech";
@@ -312,6 +323,7 @@
 				DEVELOPMENT_TEAM = MJZJ2VST6P;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "LEA-Speech/Info.plist";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Die App benötigt Zugriff auf das Mikrofon für Sprachübersetzung.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Spracherkennung für Übersetzungen.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -347,6 +359,7 @@
 				DEVELOPMENT_TEAM = MJZJ2VST6P;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "LEA-Speech/Info.plist";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Die App benötigt Zugriff auf das Mikrofon für Sprachübersetzung.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Spracherkennung für Übersetzungen.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

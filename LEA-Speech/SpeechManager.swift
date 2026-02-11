@@ -38,7 +38,7 @@ final class AzureSpeechManager: ObservableObject {
 
     // Silence timeout
     private var silenceTimer: DispatchWorkItem?
-    private let silenceTimeout: TimeInterval = 3.0
+    private let silenceTimeout: TimeInterval = 5.0
 
     // MARK: - Start Translation
 
@@ -86,6 +86,18 @@ final class AzureSpeechManager: ObservableObject {
                 guard let self = self else { return }
 
                 Task { @MainActor in
+                    self.resetSilenceTimer()   // 🔥 DAS IST DER FIX
+                    self.liveSourceText = event.result.text ?? ""
+                    self.liveTranslatedText =
+                        event.result.translations[targetLang] as? String ?? ""
+                }
+            }
+
+            /*
+            recognizer?.addRecognizingEventHandler { [weak self] _, event in
+                guard let self = self else { return }
+
+                Task { @MainActor in
                     self.liveSourceText = event.result.text ?? ""
 
                     self.liveTranslatedText =
@@ -93,6 +105,7 @@ final class AzureSpeechManager: ObservableObject {
                 }
             }
 
+             */
             // 🖤 FINAL SEGMENTS
             recognizer?.addRecognizedEventHandler { [weak self] _, event in
                 guard let self = self else { return }
