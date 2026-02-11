@@ -33,7 +33,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		5661D9FE2F3C6887003A47B2 /* Exceptions for "LEA-Speech" folder in "LEA-Speech" target */ = {
+		5661DA0C2F3C882E003A47B2 /* Exceptions for "LEA-Speech" folder in "LEA-Speech" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -59,7 +59,7 @@
 		56478B172EE7EF0A00DACC76 /* LEA-Speech */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				5661D9FE2F3C6887003A47B2 /* Exceptions for "LEA-Speech" folder in "LEA-Speech" target */,
+				5661DA0C2F3C882E003A47B2 /* Exceptions for "LEA-Speech" folder in "LEA-Speech" target */,
 				5678BCAA2F2234830025023B /* Exceptions for "LEA-Speech" folder in "Embed Frameworks" phase from "LEA-Speech" target */,
 			);
 			path = "LEA-Speech";

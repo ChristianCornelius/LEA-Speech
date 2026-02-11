@@ -1,13 +1,21 @@
+//
+//  TestView.swift
+//  LEA-Speech
+//
+//  Created by Christian Cornelius on 11.02.26.
+//
+
 import SwiftUI
 
-struct ContentView: View {
+struct TestView: View {
     
     @StateObject private var speechManager = AzureSpeechManager()
     
     @State private var myLanguage = "de-DE"
     @State private var otherLanguage = "en-US"
     
-    @State private var messages: [ChatMessage] = []
+    @State private var list: [String] = []
+    @State private var translationList: [String] = []
     
     var body: some View {
         
@@ -24,28 +32,14 @@ struct ContentView: View {
                     .foregroundStyle(Color.white.gradient)
                 
                 ScrollView {
-                    VStack(spacing: 12) {
-                        ForEach(Array(messages.enumerated()), id: \.element.id) { index, message in
-                            
-                            let isLeft = index % 2 == 0
-                            
-                            VStack(spacing: 4) {
-                                ChatBubble(
-                                    bubbleText: message.sourceText,
-                                    isLeft: isLeft
-                                )
-
-                                TranslatedChatBubble(
-                                    bubbleText: message.translatedText,
-                                    isLeft: isLeft,
-                                    language: otherLanguage,
-                                    speechManager: speechManager
-                                )
-                            }
+                    VStack(spacing: 10) {
+                        ForEach(Array(list.enumerated()), id: \.offset) { index, text in
+                            ChatBubble(bubbleText: text, isLeft: index % 2 == 0)
                         }
+                        
+                        Spacer()
                     }
                 }
-
                 
                 // MARK: - Push-To-Talk Button
                 Button {
@@ -74,29 +68,14 @@ struct ContentView: View {
             .padding()
             
         }
-        .onChange(of: speechManager.isRecording) { _, isRecording in
-            if !isRecording,
-               !speechManager.sourceText.isEmpty,
-               !speechManager.translatedText.isEmpty {
-
-                messages.append(
-                    ChatMessage(
-                        sourceText: speechManager.sourceText,
-                        translatedText: speechManager.translatedText
-                    )
-                )
+        .onChange(of: speechManager.isRecording) { _,isRecording in
+            if !speechManager.isRecording && !speechManager.sourceText.isEmpty {
+                list.append(speechManager.sourceText)
             }
         }
-
     }
 }
-
-struct ChatMessage: Identifiable {
-    let id = UUID()
-    let sourceText: String
-    let translatedText: String
-}
-
+/*
 struct ChatBubble: View {
     
     var bubbleText: String
@@ -130,52 +109,7 @@ struct ChatBubble: View {
         }
     }
 }
-
-struct TranslatedChatBubble: View {
-
-    var bubbleText: String
-    var isLeft: Bool
-    var language: String
-
-    @ObservedObject var speechManager: AzureSpeechManager
-    @State private var isSpeaking = false
-
-
-    var body: some View {
-        HStack {
-            VStack {
-                if isLeft {
-                    bubble
-                }
-            }
-            .frame(maxWidth: .infinity)
-            
-            VStack {
-                if !isLeft {
-                    bubble
-                }
-            }
-            .frame(maxWidth: .infinity)
-            
-        }
-    }
-
-    private var bubble: some View {
-        Text(bubbleText)
-            .padding()
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(isSpeaking ? Color.orange.gradient : Color.white.gradient)
-            .cornerRadius(12)
-            .onTapGesture {
-                isSpeaking = true
-                speechManager.speak(
-                    text: bubbleText,
-                    language: language
-                )
-
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    isSpeaking = false
-                }
-            }
-    }
+*/
+#Preview {
+    TestView()
 }

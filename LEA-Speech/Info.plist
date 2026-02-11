@@ -3,8 +3,8 @@
 <plist version="1.0">
 <dict>
 	<key>AZURE_SPEECH_KEY</key>
-	<string>$(AZURE_SPEECH_KEY)</string>
+	<string>HIER_DEIN_KEY</string>
 	<key>AZURE_SPEECH_REGION</key>
-	<string>$(AZURE_SPEECH_REGION)</string>
+	<string>germanywestcentral</string>
 </dict>
 </plist>
