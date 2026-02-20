@@ -43,14 +43,6 @@ struct ContentView: View {
                                     speechManager: speechManager
                                 )
                             }
-                            
-                            // 🔥 DIVIDER
-                            if index < messages.count - 1 {
-                                Divider()
-                                    .frame(height: 1)
-                                    .background(Color.white)
-                                    .padding(.vertical, 4)
-                            }
                         }
                     }
                     .padding(.top, 10)
@@ -151,7 +143,7 @@ struct ChatBubble: View {
                         .frame(width: 12, height: 12)
                         .offset(x: -6)
                     
-                    // 🔥 BUBBLE BACKGROUND
+                    // 🔥 BUBBLE BACKGROUND - NUR SO BREIT WIE NÖTIG
                     Text(bubbleText)
                         .padding()
                         .background(Color.mint.gradient)
@@ -171,7 +163,7 @@ struct ChatBubble: View {
                         .frame(width: 12, height: 12)
                         .offset(x: 6)
                     
-                    // 🔥 BUBBLE BACKGROUND
+                    // 🔥 BUBBLE BACKGROUND - NUR SO BREIT WIE NÖTIG
                     Text(bubbleText)
                         .padding()
                         .background(Color("lightBlue").gradient)
@@ -228,6 +220,16 @@ struct TranslatedChatBubble: View {
         HStack(spacing: 12) {
             // 🔥 LINKE SEITE: Speaker + Bubble
             if isLeft {
+                Image(systemName: "speaker.wave.2.circle.fill")
+                    .font(.system(size: 48))
+                    .foregroundStyle(.clear)
+                
+                // 🔥 BUBBLE PASST SICH AN ORIGINAL-BREITE AN
+                Text(bubbleText)
+                    .padding()
+                    .background(isSpeaking ? Color.orange.gradient : Color.white.gradient)
+                    .cornerRadius(12)
+                
                 // 🔥 SPEAKER BUTTON - SPRICHT DANEBEN STEHENDE BUBBLE
                 Button(action: {
                     isSpeaking = true
@@ -245,21 +247,11 @@ struct TranslatedChatBubble: View {
                         .symbolRenderingMode(.palette)
                 }
                 
-                Text(bubbleText)
-                    .padding()
-                    .background(isSpeaking ? Color.orange.gradient : Color.white.gradient)
-                    .cornerRadius(12)
-                
                 Spacer()
             }
             // 🔥 RECHTE SEITE: Bubble + Speaker
             else {
                 Spacer()
-                
-                Text(bubbleText)
-                    .padding()
-                    .background(isSpeaking ? Color.orange.gradient : Color.white.gradient)
-                    .cornerRadius(12)
                 
                 // 🔥 SPEAKER BUTTON - SPRICHT DANEBEN STEHENDE BUBBLE
                 Button(action: {
@@ -277,6 +269,16 @@ struct TranslatedChatBubble: View {
                         .foregroundStyle(.blue.gradient, Color("lightBlue"))
                         .symbolRenderingMode(.palette)
                 }
+                
+                // 🔥 BUBBLE PASST SICH AN ORIGINAL-BREITE AN
+                Text(bubbleText)
+                    .padding()
+                    .background(isSpeaking ? Color.orange.gradient : Color.white.gradient)
+                    .cornerRadius(12)
+                
+                Image(systemName: "speaker.wave.2.circle.fill")
+                    .font(.system(size: 48))
+                    .foregroundStyle(.clear)
             }
         }
     }
