@@ -17,12 +17,17 @@ enum Language: String, CaseIterable {
     case pashto = "ps-AF"
     case portuguese = "pt-BR"
     case punjabi = "pa-IN"
+    case romanian = "ro-RO"
     case russian = "ru-RU"
+    case serbian = "sr-SP"
+    case somali = "so-SO"
+    case sorani = "sn-SO"
     case spanish = "es-ES"
     case tamil = "ta-IN"
     case turkish = "tr-TR"
     case ukrainian = "uk-UA"
     case urdu = "ur-PK"
+    case vietnamese = "vi-VN"
     
     var displayName: String {
         switch self {
@@ -56,8 +61,16 @@ enum Language: String, CaseIterable {
             return "🇵🇰 Punjabi"
         case .portuguese:
             return "🇧🇷 Portugiesisch"
+        case .romanian:
+            return "🇷🇴 Rumänisch"
         case .russian:
             return "🇷🇺 Russisch"
+        case .serbian:
+            return "🇷🇸 Serbisch"
+        case .somali:
+            return "🇸🇴 Somali"
+        case .sorani:
+            return "🇸🇩 Sorani"
         case .spanish:
             return "🇪🇸 Spanisch"
         case .tamil:
@@ -68,6 +81,8 @@ enum Language: String, CaseIterable {
             return "🇺🇦 Ukrainisch"
         case .urdu:
             return "🇮🇳 Urdu"
+        case .vietnamese:
+            return "🇻🇳 Vietnamesisch"
         }
     }
 }
