@@ -75,41 +75,7 @@ struct TestView: View {
         }
     }
 }
-/*
-struct ChatBubble: View {
-    
-    var bubbleText: String
-    var isLeft: Bool
-    
-    var body: some View {
-        HStack {
-            VStack {
-                if isLeft {
-                    Text(bubbleText)
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.mint.gradient)
-                        .cornerRadius(10)
-                }
-                
-            }
-            .frame(maxWidth: .infinity)
-            
-            VStack {
-                if !isLeft {
-                    Text(bubbleText)
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color("lightBlue").gradient)
-                        .cornerRadius(10)
-                }
-            }
-            .frame(maxWidth: .infinity)
-            
-        }
-    }
-}
-*/
+
 #Preview {
     TestView()
 }
