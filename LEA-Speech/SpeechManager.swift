@@ -98,10 +98,8 @@ final class AzureSpeechManager: NSObject, ObservableObject {
                 
                 Task { @MainActor in
                     self.resetSilenceTimer()
-                    let liveSource = event.result.text ?? ""
-                    let liveTranslated = event.result.translations[targetLang] as? String ?? ""
-                    self.liveSourceText = self.normalizedTextForDisplay(liveSource, language: sourceLang)
-                    self.liveTranslatedText = self.normalizedTextForDisplay(liveTranslated, language: targetLang)
+                    self.liveSourceText = event.result.text ?? ""
+                    self.liveTranslatedText = event.result.translations[targetLang] as? String ?? ""
                     
                     // 📊 DEBUG LOGGING
                     print("📝 Live erkannt: '\(self.liveSourceText)'")
@@ -125,14 +123,12 @@ final class AzureSpeechManager: NSObject, ObservableObject {
                 
                 Task { @MainActor in
                     self.resetSilenceTimer()
-                    let normalizedOriginal = self.normalizedTextForDisplay(original, language: sourceLang)
-                    let normalizedTranslated = self.normalizedTextForDisplay(translated, language: targetLang)
                     
                     self.sourceBuffer +=
-                    (self.sourceBuffer.isEmpty ? "" : " ") + normalizedOriginal
+                    (self.sourceBuffer.isEmpty ? "" : " ") + original
                     
                     self.translationBuffer +=
-                    (self.translationBuffer.isEmpty ? "" : " ") + normalizedTranslated
+                    (self.translationBuffer.isEmpty ? "" : " ") + translated
                     
                     // Live-Text leeren, wenn Satz final ist
                     self.liveSourceText = ""
@@ -143,7 +139,7 @@ final class AzureSpeechManager: NSObject, ObservableObject {
                     self.translatedText = self.translationBuffer
                     
                     // 📊 DEBUG LOGGING
-                    print("✅ Final erkannt: '\(normalizedOriginal)' → '\(normalizedTranslated)'")
+                    print("✅ Final erkannt: '\(original)' → '\(translated)'")
                     print("💾 sourceText gesetzt: '\(self.sourceText)'")
                     print("💾 translatedText gesetzt: '\(self.translatedText)'")
                 }
@@ -183,40 +179,6 @@ final class AzureSpeechManager: NSObject, ObservableObject {
         )
     }
 
-    // MARK: - Script normalization
-
-    private func normalizedTextForDisplay(_ text: String, language: String) -> String {
-        guard !text.isEmpty else { return text }
-
-        let normalizedLanguage = language.lowercased()
-        if normalizedLanguage == "ku-tr" || normalizedLanguage.hasPrefix("ku-tr-") || normalizedLanguage == "ku" {
-            return transliterateKurmanjiToLatin(text)
-        }
-
-        return text
-    }
-
-    private func transliterateKurmanjiToLatin(_ text: String) -> String {
-        var output = text
-
-        let map: [String: String] = [
-            "ا": "a", "ە": "e", "ب": "b", "پ": "p", "ت": "t", "ج": "c",
-            "چ": "ç", "ح": "h", "خ": "x", "د": "d", "ر": "r", "ڕ": "r",
-            "ز": "z", "ژ": "j", "س": "s", "ش": "ş", "ع": "e", "غ": "x",
-            "ف": "f", "ڤ": "v", "ق": "q", "ک": "k", "ك": "k", "گ": "g",
-            "ل": "l", "ڵ": "l", "م": "m", "ن": "n", "ه": "h", "ھ": "h",
-            "و": "u", "ۆ": "o", "ؤ": "u", "ی": "î", "ێ": "ê", "ئ": "",
-            "ء": "", "ً": "", "ٌ": "", "ٍ": "", "َ": "", "ُ": "", "ِ": "",
-            "ّ": "", "ْ": ""
-        ]
-
-        for (arabic, latin) in map {
-            output = output.replacingOccurrences(of: arabic, with: latin)
-        }
-
-        return output
-    }
-    
     // MARK: - Stop Translation
     
     func stopTranslation(
@@ -283,7 +245,7 @@ final class AzureSpeechManager: NSObject, ObservableObject {
         }
 
         if normalized == "ku-tr" || normalized.hasPrefix("ku-tr-") || normalized == "ku" {
-            return ("tr-TR", "tr-TR-AhmetNeural")
+            return ("fa-IR", "fa-IR-DilaraNeural")
         }
 
         return (language, nil)
