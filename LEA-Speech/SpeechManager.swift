@@ -247,6 +247,10 @@ final class AzureSpeechManager: NSObject, ObservableObject {
         if normalized == "ku-tr" || normalized.hasPrefix("ku-tr-") || normalized == "ku" {
             return ("fa-IR", "fa-IR-DilaraNeural")
         }
+        
+        if normalized == "kmr-tr" || normalized.hasPrefix("kmr-tr-") || normalized == "kmr" {
+            return ("tr-TR", "tr-TR-EmelNeural")
+        }
 
         return (language, nil)
     }
