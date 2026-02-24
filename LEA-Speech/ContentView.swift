@@ -23,24 +23,23 @@ struct ContentView: View {
             
             VStack(spacing: UIDevice.current.userInterfaceIdiom == .pad ? 20 : 10) {
                 
-                ZStack {
-                    
-                    Button {
-                        resetConversation()
-                    } label: {
-                        Image(systemName: "arrow.counterclockwise.circle.fill")
-                            .font(.system(size: iconSize))
-                            .foregroundStyle(.blue.gradient, .white.gradient)
-                            .symbolRenderingMode(.palette)
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                Text("Sprachmittler")
+                    .font(.title)
+                    .bold()
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .overlay(alignment: .leading) {
+                        Button {
+                            resetConversation()
+                        } label: {
+                            Image(systemName: "arrow.counterclockwise.circle.fill")
+                                .font(.system(size: iconSize))
+                                .foregroundStyle(.blue.gradient, .white.gradient)
+                                .symbolRenderingMode(.palette)
+                        }
+                        .buttonStyle(.plain)
                     }
-                    
-                    Text("Sprachmittler")
-                        .font(.title)
-                        .bold()
-                        .foregroundStyle(Color.white)
-                }
-                
+
                 // 🔥 DROPDOWN MENÜ
                 Menu {
                     ForEach(Language.allCases, id: \.self) { language in
@@ -66,7 +65,7 @@ struct ContentView: View {
                     }
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
-                    .background(Color.white.opacity(0.2))
+                    .background(Color.gray.opacity(0.3))
                     .cornerRadius(8)
                 }
                 

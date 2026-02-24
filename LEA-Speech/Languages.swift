@@ -40,53 +40,53 @@ enum Language: String, CaseIterable {
     var displayName: String {
         switch self {
         case .albanian:
-            return "🇦🇲 Albanisch"
+            return "Albanisch"
         case .arabic:
-            return "🇦🇪 Arabisch"
+            return "Arabisch"
         case .armenian:
-            return "🇦🇲 Armenisch"
+            return "Armenisch"
         case .azeriCyrillic:
-            return "🇦🇿 Aserbaidschanisch"
+            return "Aserbaidschanisch"
         case .bosnian:
-            return "🇧🇦 Bosnisch"
+            return "Bosnisch"
         case .chinese:
-            return "🇨🇳 Chinesisch"
+            return "Chinesisch"
         case .dari:
-            return "🇩🇿 Dari"
+            return "Dari"
         case .english:
-            return "🇬🇧 Englisch"
+            return "Englisch"
         case .farsi:
-            return "🇮🇷 Farsi"
+            return "Farsi"
         case .french:
-            return "🇫🇷 Französisch"
+            return "Französisch"
         case .georgian:
-            return "🇬🇪 Georgisch"
+            return "Georgisch"
         case .hindi:
-            return "🇮🇳 Hindi"
+            return "Hindi"
         case .kurmanji:
-            return "🇹🇷 Kurmandschi"
+            return "Kurmandschi"
         case .macedonian:
-            return "🇲🇰 Mazedonisch"
+            return "Mazedonisch"
         case .pashto:
-            return "🇦🇫 Paschtu"
+            return "Paschtu"
         case .punjabi:
-            return "🇵🇰 Punjabi"
+            return "Punjabi"
         case .portuguese:
-            return "🇧🇷 Portugiesisch"
+            return "Portugiesisch"
         case .romanian:
-            return "🇷🇴 Rumänisch"
+            return "Rumänisch"
         case .russian:
-            return "🇷🇺 Russisch"
+            return "Russisch"
         case .serbian:
-            return "🇷🇸 Serbisch"
+            return "Serbisch"
         case .somali:
-            return "🇸🇴 Somali"
+            return "Somali"
         case .sorani:
-            return "🇸🇩 Sorani"
+            return "Sorani"
         case .spanish:
-            return "🇪🇸 Spanisch"
+            return "Spanisch"
         case .tamil:
-            return "🇮🇳 Tamil"
+            return "Tamil"
         case .tigray:
             return "🇹🇷 Tigrinisch"
         case .turkish:
@@ -97,6 +97,42 @@ enum Language: String, CaseIterable {
             return "🇮🇳 Urdu"
         case .vietnamese:
             return "🇻🇳 Vietnamesisch"
+        }
+    }
+}
+
+extension Language {
+    var ttsVoiceName: String {
+        switch self {
+        case .albanian: return "sq-AL-AnilaNeural"
+        case .arabic: return "ar-SA-ZariyahNeural"
+        case .armenian: return "hy-AM-AnahitNeural"
+        case .azeriCyrillic: return "az-AZ-BanuNeural"
+        case .bosnian: return "bs-BA-VesnaNeural"
+        case .chinese: return "zh-CN-XiaoxiaoNeural"
+        case .dari: return "fa-IR-DilaraNeural"      // bewusst gemappt
+        case .english: return "en-US-JennyNeural"
+        case .farsi: return "fa-IR-DilaraNeural"
+        case .french: return "fr-FR-DeniseNeural"
+        case .georgian: return "ka-GE-EkaNeural"
+        case .hindi: return "hi-IN-SwaraNeural"
+        case .kurmanji: return "tr-TR-EmelNeural"    // Fallback
+        case .macedonian: return "mk-MK-MarijaNeural"
+        case .pashto: return "ps-AF-LatifaNeural"
+        case .portuguese: return "pt-BR-FranciscaNeural"
+        case .punjabi: return "pa-IN-VaaniNeural"
+        case .romanian: return "ro-RO-AlinaNeural"
+        case .russian: return "ru-RU-SvetlanaNeural"
+        case .serbian: return "sr-RS-SophieNeural"
+        case .somali: return "so-SO-UbaxNeural"
+        case .sorani: return "tr-TR-EmelNeural"      // Fallback
+        case .spanish: return "es-ES-ElviraNeural"
+        case .tamil: return "ta-IN-PallaviNeural"
+        case .tigray: return "am-ET-MekdesNeural"    // Fallback
+        case .turkish: return "tr-TR-EmelNeural"
+        case .ukrainian: return "uk-UA-PolinaNeural"
+        case .urdu: return "ur-PK-UzmaNeural"
+        case .vietnamese: return "vi-VN-HoaiMyNeural"
         }
     }
 }
