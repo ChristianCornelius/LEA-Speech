@@ -26,7 +26,7 @@ enum Language: String, CaseIterable {
     case punjabi = "pa-IN"
     case romanian = "ro-RO"
     case russian = "ru-RU"
-    case serbian = "sr-SP"
+    case serbian = "sr-RS"
     case somali = "so-SO"
     case sorani = "sn-SO"
     case spanish = "es-ES"

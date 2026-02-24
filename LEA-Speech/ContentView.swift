@@ -26,7 +26,7 @@ struct ContentView: View {
                 ZStack {
                     
                     Button {
-                        messages = []
+                        resetConversation()
                     } label: {
                         Image(systemName: "arrow.counterclockwise.circle.fill")
                             .font(.system(size: iconSize))
@@ -157,6 +157,16 @@ struct ContentView: View {
 
     }
     
+    private func resetConversation() {
+        messages = []
+        lastProcessedText = ""
+
+        speechManager.sourceText = ""
+        speechManager.translatedText = ""
+        speechManager.liveSourceText = ""
+        speechManager.liveTranslatedText = ""
+    }
+
     // 🔥 NEUE HELPER-FUNKTION
     private func addMessageIfNeeded() {
         let currentSource = speechManager.sourceText.trimmingCharacters(in: .whitespaces)
