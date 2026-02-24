@@ -296,6 +296,7 @@ final class AzureSpeechManager: NSObject, ObservableObject {
         
         let key = speechKey
         let region = region
+        let mapped = mappedTTSLanguageAndVoice(for: language)
         
         ttsQueue.async {
             do {
@@ -303,7 +304,6 @@ final class AzureSpeechManager: NSObject, ObservableObject {
                     subscription: key,
                     region: region
                 )
-                let mapped = self.mappedTTSLanguageAndVoice(for: language)
                 speechConfig.speechSynthesisLanguage = mapped.language
                 if let voiceName = mapped.voiceName {
                     speechConfig.speechSynthesisVoiceName = voiceName
@@ -333,64 +333,4 @@ final class AzureSpeechManager: NSObject, ObservableObject {
         }
     }
 }
-    /*
-    // MARK: - Text To Speech
-
-    func speakTranslatedText(language: String) {
-        guard !translatedText.isEmpty else { return }
-
-        let utterance = AVSpeechUtterance(string: translatedText)
-        utterance.voice = AVSpeechSynthesisVoice(language: language)
-        utterance.rate = 0.48
-        utterance.volume = 1.0
-
-        speechSynthesizer.stopSpeaking(at: .immediate)
-        speechSynthesizer.speak(utterance)
-    }
-    
-    // MARK: - Speak arbitrary text (for chat bubbles)
-
-    func speak(text: String, language: String) {
-        guard !text.isEmpty else { return }
-
-        let session = AVAudioSession.sharedInstance()
-
-        do {
-            try session.setCategory(
-                .playback,
-                mode: .spokenAudio,
-                options: [.duckOthers]
-            )
-            try session.setActive(true)
-        } catch {
-            print("❌ TTS AudioSession Fehler:", error.localizedDescription)
-            return
-        }
-
-        let utterance = AVSpeechUtterance(string: text)
-        utterance.voice = AVSpeechSynthesisVoice(language: language)
-        utterance.rate = 0.48
-        utterance.volume = 1.0
-
-        speechSynthesizer.stopSpeaking(at: .immediate)
-        speechSynthesizer.speak(utterance)
-    }
-
-    
-}
-
-
-extension AzureSpeechManager: AVSpeechSynthesizerDelegate {
-
-    nonisolated func speechSynthesizer(
-        _ synthesizer: AVSpeechSynthesizer,
-        didFinish utterance: AVSpeechUtterance
-    ) {
-        do {
-            try AVAudioSession.sharedInstance().setActive(false)
-        } catch {
-            print("❌ AudioSession finalize Fehler:", error.localizedDescription)
-        }
-    }
-}
-*/
+   
