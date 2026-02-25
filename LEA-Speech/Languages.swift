@@ -88,15 +88,15 @@ enum Language: String, CaseIterable {
         case .tamil:
             return "Tamil"
         case .tigray:
-            return "🇹🇷 Tigrinisch"
+            return "Tigrinisch"
         case .turkish:
-            return "🇹🇷 Türkisch"
+            return "Türkisch"
         case .ukrainian:
-            return "🇺🇦 Ukrainisch"
+            return "Ukrainisch"
         case .urdu:
-            return "🇮🇳 Urdu"
+            return "Urdu"
         case .vietnamese:
-            return "🇻🇳 Vietnamesisch"
+            return "Vietnamesisch"
         }
     }
 }

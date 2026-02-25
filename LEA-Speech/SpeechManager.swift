@@ -30,6 +30,9 @@ final class AzureSpeechManager: NSObject, ObservableObject {
     // MARK: - Azure Config
 
     private let speechKey = "EkLKrM2xPmlotL6xLfO8JpZBNCySmxigQjsy8mRMGyf5YKDhWq0MJQQJ99CAACPV0roXJ3w3AAAYACOGtFaZ"
+    
+    private let translateKey = "dzvZuPcGwogQRbZN8IVsn4BGHU4JOhYcJIXovuq90yHXveBc1dHjJQQJ99BIACPV0roXJ3w3AAAbACOGohAQ"
+    
     private let region = "germanywestcentral"
 
     private let ttsQueue = DispatchQueue(label: "azure.tts.queue", qos: .userInitiated)
@@ -164,6 +167,140 @@ final class AzureSpeechManager: NSObject, ObservableObject {
             resetSilenceTimer()
         } catch {
             print("❌ Speech Fehler:", error.localizedDescription)
+        }
+    }
+
+    // MARK: - Text translation (fallback when STT is unavailable)
+
+    private struct TranslatorRequestBody: Encodable {
+        let text: String
+
+        enum CodingKeys: String, CodingKey {
+            case text = "Text"
+        }
+    }
+
+    private struct TranslatorResponseItem: Decodable {
+        let translations: [TranslatorTranslation]
+    }
+
+    private struct TranslatorTranslation: Decodable {
+        let text: String
+        let to: String
+    }
+
+    private func mappedLanguageForTextTranslation(_ language: String) -> String {
+        let normalized = language.lowercased()
+
+        if normalized.hasPrefix("kmr") {
+            return "kmr"
+        }
+        if normalized == "ku-tr" || normalized.hasPrefix("ku-tr-") {
+            return "ckb"
+        }
+        if normalized.hasPrefix("ti-et") || normalized == "ti" {
+            return "ti"
+        }
+        if normalized.hasPrefix("prs") || normalized == "fa-af" || normalized.hasPrefix("fa-af-") {
+            return "fa"
+        }
+
+        if let base = normalized.split(separator: "-").first, !base.isEmpty {
+            return String(base)
+        }
+
+        return normalized
+    }
+
+    private func performTextTranslationRequest(
+        text: String,
+        from mappedSource: String?,
+        to mappedTarget: String
+    ) async throws -> (translated: String, statusCode: Int?) {
+        guard var components = URLComponents(string: "https://api.cognitive.microsofttranslator.com/translate") else {
+            return ("", nil)
+        }
+
+        var queryItems = [URLQueryItem(name: "api-version", value: "3.0")]
+        if let mappedSource, !mappedSource.isEmpty {
+            queryItems.append(URLQueryItem(name: "from", value: mappedSource))
+        }
+        queryItems.append(URLQueryItem(name: "to", value: mappedTarget))
+        components.queryItems = queryItems
+
+        guard let url = components.url else { return ("", nil) }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue(translateKey, forHTTPHeaderField: "Ocp-Apim-Subscription-Key")
+        request.setValue(region, forHTTPHeaderField: "Ocp-Apim-Subscription-Region")
+        request.setValue(UUID().uuidString, forHTTPHeaderField: "X-ClientTraceId")
+        request.httpBody = try JSONEncoder().encode([TranslatorRequestBody(text: text)])
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        let statusCode = (response as? HTTPURLResponse)?.statusCode
+
+        if let statusCode, !(200...299).contains(statusCode) {
+            let responseText = String(data: data, encoding: .utf8) ?? ""
+            print("❌ Textübersetzung fehlgeschlagen. status=\(statusCode), body=\(responseText)")
+            return ("", statusCode)
+        }
+
+        let decoded = try JSONDecoder().decode([TranslatorResponseItem].self, from: data)
+        let translated = decoded.first?.translations.first?.text ?? ""
+        return (translated, statusCode)
+    }
+
+    func translateTypedText(
+        _ text: String,
+        from sourceLang: String,
+        to targetLang: String
+    ) async -> Bool {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return false }
+
+        let mappedSource = mappedLanguageForTextTranslation(sourceLang)
+        let mappedTarget = mappedLanguageForTextTranslation(targetLang)
+
+        do {
+            var translated = try await performTextTranslationRequest(
+                text: trimmed,
+                from: mappedSource,
+                to: mappedTarget
+            ).translated
+
+            if translated.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() ==
+                trimmed.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() {
+                let fallback = try await performTextTranslationRequest(
+                    text: trimmed,
+                    from: nil,
+                    to: mappedTarget
+                )
+                if !fallback.translated.isEmpty {
+                    translated = fallback.translated
+                    print("ℹ️ Textübersetzung Fallback genutzt (auto-detect statt from=\(mappedSource))")
+                }
+            }
+
+            guard !translated.isEmpty else {
+                print("❌ Textübersetzung ohne Ergebnis")
+                return false
+            }
+
+            sourceBuffer = trimmed
+            translationBuffer = translated
+
+            sourceText = sourceBuffer
+            translatedText = translationBuffer
+            liveSourceText = ""
+            liveTranslatedText = ""
+
+            print("✅ Texteingabe übersetzt: '\(sourceText)' → '\(translatedText)'")
+            return true
+        } catch {
+            print("❌ Textübersetzung Fehler:", error.localizedDescription)
+            return false
         }
     }
 
@@ -314,6 +451,16 @@ final class AzureSpeechManager: NSObject, ObservableObject {
         let key = speechKey
         let region = region
         let mapped = mappedTTSLanguageAndVoice(for: language)
+        let escaped = xmlEscaped(ttsText)
+        let rate = "\(ttsRatePercent)%"
+
+        let ssml = """
+        <speak version='1.0' xml:lang='\(mapped.language)'>
+          <voice name='\(mapped.voiceName)'>
+            <prosody rate='\(rate)'>\(escaped)</prosody>
+          </voice>
+        </speak>
+        """
 
         ttsQueue.async {
             do {
@@ -329,17 +476,6 @@ final class AzureSpeechManager: NSObject, ObservableObject {
                     speechConfiguration: speechConfig,
                     audioConfiguration: audioConfig
                 )
-
-                let escaped = self.xmlEscaped(ttsText)
-                let rate = "\(self.ttsRatePercent)%"
-
-                let ssml = """
-                <speak version='1.0' xml:lang='\(mapped.language)'>
-                  <voice name='\(mapped.voiceName)'>
-                    <prosody rate='\(rate)'>\(escaped)</prosody>
-                  </voice>
-                </speak>
-                """
 
                 let result = try synthesizer.speakSsml(ssml)
 

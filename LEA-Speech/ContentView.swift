@@ -9,9 +9,35 @@ struct ContentView: View {
     
     @State private var messages: [ChatMessage] = []
     @State private var lastProcessedText = "" // 🔥 TRACKING
+    @State private var displaySheet: Bool = false
+    @State private var sheetInputText = ""
+    @State private var sheetErrorText = ""
+    @State private var isSubmittingSheet = false
+    @State private var sheetTitle: String = ""
+    @State private var sheetSubtitle: String = ""
+    @State private var sheetCancel: String = ""
+    @State private var sheetConfirm: String = ""
     
     private var iconSize: CGFloat {
         UIDevice.current.userInterfaceIdiom == .pad ? 48 : 34
+    }
+
+    private var nextIsLeft: Bool {
+        messages.count % 2 == 0
+    }
+
+    private var nextFromLanguage: String {
+        nextIsLeft ? myLanguage : selectedLanguage.rawValue
+    }
+
+    private var nextToLanguage: String {
+        nextIsLeft ? selectedLanguage.rawValue : myLanguage
+    }
+
+    private var shouldUseTextInputInsteadOfSTT: Bool {
+        !nextIsLeft &&
+        isNoSTTSupportedLanguage(selectedLanguage) &&
+        nextToLanguage.lowercased().hasPrefix("de")
     }
     
     var body: some View {
@@ -39,7 +65,7 @@ struct ContentView: View {
                         }
                         .buttonStyle(.plain)
                     }
-
+                
                 // 🔥 DROPDOWN MENÜ
                 Menu {
                     ForEach(Language.allCases, id: \.self) { language in
@@ -59,7 +85,7 @@ struct ContentView: View {
                         Text(selectedLanguage.displayName)
                             .font(.headline)
                             .foregroundColor(.white)
-                                            
+                        
                         Image(systemName: "chevron.down")
                             .foregroundColor(.white)
                     }
@@ -82,7 +108,7 @@ struct ContentView: View {
                                         bubbleText: message.sourceText,
                                         isLeft: isLeft
                                     )
-
+                                    
                                     TranslatedChatBubble(
                                         bubbleText: message.translatedText,
                                         isLeft: isLeft,
@@ -106,37 +132,50 @@ struct ContentView: View {
                         }
                     }
                 }
-
+                
                 
                 // MARK: - Push-To-Talk Button
-                Button {
-                    Task {
-                        if speechManager.isRecording {
-                            await speechManager.stopTranslation()
-                        } else {
-                            let nextIsLeft = messages.count % 2 == 0
-
-                            let fromLanguage = nextIsLeft ? myLanguage : selectedLanguage.rawValue
-                            let toLanguage = nextIsLeft ? selectedLanguage.rawValue : myLanguage
-
-                            await speechManager.startTranslation(
-                                from: fromLanguage,
-                                to: toLanguage
-                            )
-
-                        }
+                if shouldUseTextInputInsteadOfSTT {
+                    Button {
+                        sheetErrorText = ""
+                        sheetInputText = ""
+                        displaySheet = true
+                    } label: {
+                        Image(systemName: "rectangle.and.pencil.and.ellipsis")
+                            .font(.title)
+                            .foregroundStyle(.white)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color.green.gradient)
+                            .cornerRadius(16)
                     }
-                } label: {
-                    Image(systemName: speechManager.isRecording ? "microphone.slash.fill" : "microphone.fill")
-                        .font(.title)
-                        .foregroundStyle(.white)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(
-                            speechManager.isRecording ? Color.red.gradient : Color.green.gradient
-                        )
-                        .cornerRadius(16)
+                } else {
+                    Button {
+                        Task {
+                            if speechManager.isRecording {
+                                await speechManager.stopTranslation()
+                            } else {
+                                await speechManager.startTranslation(
+                                    from: nextFromLanguage,
+                                    to: nextToLanguage
+                                )
+                                
+                            }
+                        }
+                    } label: {
+                        Image(systemName: speechManager.isRecording ? "microphone.slash.fill" : "microphone.fill")
+                            .font(.title)
+                            .foregroundStyle(.white)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(
+                                speechManager.isRecording ? Color.red.gradient : Color.green.gradient
+                            )
+                            .cornerRadius(16)
+                    }
                 }
+                
+                
             }
             .padding()
             
@@ -153,6 +192,68 @@ struct ContentView: View {
                 addMessageIfNeeded()
             }
         }
+        .onChange(of: selectedLanguage) { _,_ in
+            switch selectedLanguage {
+            case .kurmanji:
+                sheetTitle = "Têketina nivîsê"
+                sheetSubtitle = "Nivîsê têkeve"
+                sheetCancel = "Betal bike"
+                sheetConfirm = "Wergerandin"
+            case .sorani:
+                sheetTitle = "داخڵکردنی نووسین"
+                sheetSubtitle = "نووسین داخڵ بکە"
+                sheetCancel = "هەڵوەشاندنەوە"
+                sheetConfirm = "وەرگێڕان"
+            case .tigray:
+                sheetTitle = "ምእታው ጽሑፍ"
+                sheetSubtitle = "ጽሑፍ ኣእቱ"
+                sheetCancel = "ሰርዝ"
+                sheetConfirm = "ትርጉም"
+            default:
+                sheetTitle = "Texteingabe"
+                sheetSubtitle = "Text eingeben"
+                sheetCancel = "Abbrechen"
+                sheetConfirm = "Übersetzen"
+            }
+        }
+        .sheet(isPresented: $displaySheet) {
+            NavigationStack {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(sheetSubtitle)
+                        .font(.headline)
+
+                    TextEditor(text: $sheetInputText)
+                        .frame(minHeight: 140)
+                        .padding(8)
+                        .background(Color.gray.opacity(0.15))
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+
+                    if !sheetErrorText.isEmpty {
+                        Text(sheetErrorText)
+                            .foregroundStyle(.red)
+                            .font(.footnote)
+                    }
+
+                    Spacer()
+                }
+                .padding()
+                .navigationTitle(sheetTitle)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button(sheetCancel) {
+                            displaySheet = false
+                        }
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button(isSubmittingSheet ? "Sende..." : sheetConfirm) {
+                            Task { await submitTextSheet() }
+                        }
+                        .disabled(isSubmittingSheet || sheetInputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    }
+                }
+            }
+        }
 
     }
     
@@ -164,6 +265,38 @@ struct ContentView: View {
         speechManager.translatedText = ""
         speechManager.liveSourceText = ""
         speechManager.liveTranslatedText = ""
+    }
+
+    private func isNoSTTSupportedLanguage(_ language: Language) -> Bool {
+        switch language {
+        case .kurmanji, .sorani, .tigray:
+            return true
+        default:
+            return false
+        }
+    }
+
+    private func submitTextSheet() async {
+        let input = sheetInputText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !input.isEmpty else { return }
+
+        isSubmittingSheet = true
+        sheetErrorText = ""
+
+        let success = await speechManager.translateTypedText(
+            input,
+            from: nextFromLanguage,
+            to: nextToLanguage
+        )
+
+        isSubmittingSheet = false
+
+        if success {
+            displaySheet = false
+            sheetInputText = ""
+        } else {
+            sheetErrorText = "Übersetzung fehlgeschlagen. Bitte erneut versuchen."
+        }
     }
 
     // 🔥 NEUE HELPER-FUNKTION
