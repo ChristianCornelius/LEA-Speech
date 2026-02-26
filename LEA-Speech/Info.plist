@@ -2,9 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>AZURE_REGION</key>
+	<string>$(AZURE_REGION)</string>
 	<key>AZURE_SPEECH_KEY</key>
-	<string>HIER_DEIN_KEY</string>
-	<key>AZURE_SPEECH_REGION</key>
-	<string>germanywestcentral</string>
+	<string>$(AZURE_SPEECH_KEY)</string>
+	<key>AZURE_TRANSLATE_KEY</key>
+	<string>$(AZURE_TRANSLATE_KEY)</string>
 </dict>
 </plist>

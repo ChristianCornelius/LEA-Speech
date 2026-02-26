@@ -27,6 +27,7 @@
 
 /* Begin PBXFileReference section */
 		56478B152EE7EF0A00DACC76 /* LEA-Speech.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "LEA-Speech.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		56478B232EE7EF0C00DACC76 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "LEA-Speech/Secrets.xcconfig"; sourceTree = SOURCE_ROOT; };
 		5678BCAC2F2234B70025023B /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		5678BCAE2F2234CC0025023B /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		5678BCB02F2234D90025023B /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
@@ -315,6 +316,7 @@
 		};
 		56478B212EE7EF0C00DACC76 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 56478B232EE7EF0C00DACC76 /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -351,6 +353,7 @@
 		};
 		56478B222EE7EF0C00DACC76 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 56478B232EE7EF0C00DACC76 /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
