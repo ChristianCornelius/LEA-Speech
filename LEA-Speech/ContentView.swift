@@ -39,6 +39,14 @@ struct ContentView: View {
         isNoSTTSupportedLanguage(selectedLanguage) &&
         nextToLanguage.lowercased().hasPrefix("de")
     }
+
+    private var preferredSheetKeyboardLanguages: [String] {
+        keyboardLanguageHints(for: nextFromLanguage)
+    }
+
+    private var usesCustomTigrinyaKeyboard: Bool {
+        nextFromLanguage.lowercased().hasPrefix("ti")
+    }
     
     var body: some View {
         
@@ -222,11 +230,20 @@ struct ContentView: View {
                     Text(sheetSubtitle)
                         .font(.headline)
 
-                    TextEditor(text: $sheetInputText)
+                    PreferredKeyboardTextView(
+                        text: $sheetInputText,
+                        preferredLanguages: preferredSheetKeyboardLanguages,
+                        autoFocus: true,
+                        usesSystemKeyboard: !usesCustomTigrinyaKeyboard
+                    )
                         .frame(minHeight: 140)
                         .padding(8)
                         .background(Color.gray.opacity(0.15))
                         .clipShape(RoundedRectangle(cornerRadius: 10))
+
+                    if usesCustomTigrinyaKeyboard {
+                        TigrinyaKeyboardView(text: $sheetInputText)
+                    }
 
                     if !sheetErrorText.isEmpty {
                         Text(sheetErrorText)
@@ -274,6 +291,32 @@ struct ContentView: View {
         default:
             return false
         }
+    }
+
+    private func keyboardLanguageHints(for sourceLanguage: String) -> [String] {
+        let normalized = sourceLanguage.lowercased()
+
+        if normalized.hasPrefix("kmr") {
+            return ["ku", "tr"]
+        }
+        if normalized == "ku-tr" || normalized.hasPrefix("ku-tr-") {
+            return ["ckb", "ku", "ar", "fa"]
+        }
+        if normalized.hasPrefix("ti") {
+            return ["ti", "am"]
+        }
+        if normalized.hasPrefix("prs") || normalized.hasPrefix("fa-af") {
+            return ["fa", "prs"]
+        }
+
+        let parts = normalized.split(separator: "-")
+        if parts.count >= 2 {
+            return [normalized, String(parts[0])]
+        }
+        if let first = parts.first {
+            return [String(first)]
+        }
+        return [normalized]
     }
 
     private func submitTextSheet() async {
